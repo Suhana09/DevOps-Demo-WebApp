@@ -18,7 +18,7 @@ pipeline {
     }
     stage ('static code analysis') {
       steps {
-        withSonarQubeEnv ('SonarQube Scanner') {
+        withSonarQubeEnv ('sonarqube') {
           sh 'mvn clean package sonar:sonar'
         }
       }
