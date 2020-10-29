@@ -1,5 +1,9 @@
 pipeline {
   agent any
+  tools {
+    maven 'maven'
+  }
+  
   stages {
     stage('SCM'){
       steps {
@@ -8,8 +12,8 @@ pipeline {
     }
     stage('compile'){
       steps {
-        def mvnHome = tool name: 'maven', type: maven
-        sh "${mvnHome}/bin/mvn compile"
+ //       def mvnHome = tool name: 'maven', type: maven
+        sh "mvn compile"
       }
     }
   //  stage ('static code analysis'){
