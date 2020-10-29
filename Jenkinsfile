@@ -9,7 +9,7 @@ node{
   stage ('static code analysis'){
     def mnvHome = tool name: 'maven', type: maven
     withSonarQubeEnv('sonarqube'){
-      sh "$(mvnHome)/bin/mvn sonar:sonar"
+      sh "${mvnHome}/bin/mvn sonar:sonar"
     }
   }
 }
