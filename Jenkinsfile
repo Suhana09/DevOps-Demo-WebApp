@@ -16,6 +16,20 @@ pipeline {
         sh "mvn compile"
       }
     }
+    stage ('static code analysis') {
+      steps {
+        withSonarQubeEnv ('SonarQube Scanner') {
+          sh 'mvn clean package sonar:sonar'
+        }
+      }
+    }
+    stage("Quality Gate") {
+      steps {
+        timeout(time: 1, unit: 'HOURS') {
+          waitForQualityGate abortPipeline: true
+        }
+      }
+    }
   //  stage ('static code analysis'){
   //    def mnvHome = tool name: 'maven', type: maven
   //    withSonarQubeEnv('sonarqube'){
