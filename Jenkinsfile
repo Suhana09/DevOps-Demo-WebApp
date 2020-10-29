@@ -19,13 +19,17 @@ pipeline {
     stage ('static code analysis') {
       steps {
         withSonarQubeEnv ('sonarqube') {
-          sh 'mvn clean package sonar:sonar'
+          sh 'mvn clean package sonar:sonar \
+          -Dsonar.sources=. 
+          
+          
         }
       }
     }
     stage("Quality Gate") {
       steps {
         timeout(time: 1, unit: 'HOURS') {
+          waitForQualityGate webhookSecretId: 'sonarwebhook'
           waitForQualityGate abortPipeline: true
         }
       }
