@@ -32,9 +32,9 @@ pipeline {
             sh "${tool("SonarQube Scanner")}/bin/sonar-scanner \
             -Dsonar.sources=. \
             -Dsonar.tests=. \
-            -Dsonar.inclusions=**/test/java/servlet/createpage_junit.java
-            -Dsonar.test.exclusions=**/test/java/servlet/createpage_junit.java
-            -Dsonar.login=admin
+            -Dsonar.inclusions=**/test/java/servlet/createpage_junit.java \
+            -Dsonar.test.exclusions=**/test/java/servlet/createpage_junit.java \
+            -Dsonar.login=admin \
             -Dsonar.password=admin"   
           }
         }
