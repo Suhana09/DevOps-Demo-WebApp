@@ -11,12 +11,12 @@ pipeline {
         }
         stage("Blazemeter") {
             steps {
-                blazeMeterTest credentialsId: 'blazemeter', testId: '8578936.taurus', workspaceId: '667789'
+                //blazeMeterTest credentialsId: 'blazemeter', testId: '8578936.taurus', workspaceId: '667789'
             }
         }
         stage("Sanity test") {
             steps {
-                sh "mvn clean test -f Acceptancetest/pom.xml"
+                sh "mvn test -f Acceptancetest/pom.xml"
                 publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '\\Acceptancetest\\target\\surefire-reports', reportFiles: 'index.html', reportName: 'Sanity Test Report', reportTitles: ''])
             }
         }
