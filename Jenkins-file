@@ -9,11 +9,6 @@ pipeline {
                 git 'https://github.com/Suhana09/DevOps-Demo-WebApp.git'
             }
         }
-        stage("Blazemeter") {
-            steps {
-                //blazeMeterTest credentialsId: 'blazemeter', testId: '8578936.taurus', workspaceId: '667789'
-            }
-        }
         stage("Sanity test") {
             steps {
                 sh "mvn test -f Acceptancetest/pom.xml"
