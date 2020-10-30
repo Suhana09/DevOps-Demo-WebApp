@@ -29,13 +29,7 @@ pipeline {
         script {
           def scannerHome = tool 'SonarQube Scanner';
           withSonarQubeEnv(credentialsId: 'sonar-webhook') {
-            sh "${tool("SonarQube Scanner")}/bin/sonar-scanner \
-            -Dsonar.sources=. \
-            -Dsonar.tests=. \
-            -Dsonar.inclusions=**/test/java/servlet/createpage_junit.java \
-            -Dsonar.test.exclusions=**/test/java/servlet/createpage_junit.java \
-            -Dsonar.login=admin \
-            -Dsonar.password=admin"   
+            sh "${tool("SonarQube Scanner")}/bin/sonar-scanner \-Dsonar.sources=. \-Dsonar.tests=. \-Dsonar.inclusions=**/test/java/servlet/createpage_junit.java \-Dsonar.test.exclusions=**/test/java/servlet/createpage_junit.java \-Dsonar.login=admin \-Dsonar.password=admin"   
           }
         }
       }
@@ -44,7 +38,7 @@ pipeline {
     stage("Quality Gate") {
       steps {
         timeout(time: 1, unit: 'HOURS') {
-          waitForQualityGate webhookSecretId: 'sonarwebhook'
+  //        waitForQualityGate webhookSecretId: 'sonarwebhook'
           waitForQualityGate abortPipeline: true
         }
       }
