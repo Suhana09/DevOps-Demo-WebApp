@@ -11,7 +11,7 @@ pipeline {
         }
         stage("Sanity test") {
             steps {
-                sh "mvn surefiretest:test"
+                sh "mvn test"
                 publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '\\Acceptancetest\\target\\surefire-reports', reportFiles: 'index.html', reportName: 'Sanity Test Report', reportTitles: ''])
             }
         }
