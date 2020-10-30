@@ -16,16 +16,31 @@ pipeline {
         sh "mvn compile"
       }
     }
-    stage ('static code analysis') {
+//    stage ('static code analysis') {
+//      steps {
+//        withSonarQubeEnv ('sonarqube') {
+//          sh 'mvn clean package sonar:sonar \
+//          -Dsonar.sources=. 
+//        }
+//      }
+//    }
+    stage ('Code Analysis') {
       steps {
-        withSonarQubeEnv ('sonarqube') {
-          sh 'mvn clean package sonar:sonar \
-          -Dsonar.sources=. 
-          
-          
+        script {
+          def scannerHome = tool 'SonarQube Scanner';
+          withSonarQubeEnv(credentialsId: 'sonar-webhook') {
+            sh "${tool("SonarQube Scanner")}/bin/sonar-scanner \
+            -Dsonar.sources=. \
+            -Dsonar.tests=. \
+            -Dsonar.inclusions=**/test/java/servlet/createpage_junit.java
+            -Dsonar.test.exclusions=**/test/java/servlet/createpage_junit.java
+            -Dsonar.login=admin
+            -Dsonar.password=admin"   
+          }
         }
       }
     }
+      
     stage("Quality Gate") {
       steps {
         timeout(time: 1, unit: 'HOURS') {
