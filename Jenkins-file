@@ -9,9 +9,15 @@ pipeline {
                 git 'https://github.com/Suhana09/DevOps-Demo-WebApp.git'
             }
         }
-        stage("Maven Build") {
+        stage("Blazemeter") {
             steps {
-                sh "mvn clean package"
+                blazeMeterTest credentialsId: 'blazemeter', testId: '8578936.taurus', workspaceId: '667789'
+            }
+        }
+        stage("Sanity test") {
+            steps {
+                sh "mvn clean test -f Acceptancetest/pom.xml"
+                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '\\Acceptancetest\\target\\surefire-reports', reportFiles: 'index.html', reportName: 'Sanity Test Report', reportTitles: ''])
             }
         }
     }
