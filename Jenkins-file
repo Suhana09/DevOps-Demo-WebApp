@@ -9,6 +9,7 @@ pipeline {
                 git 'https://github.com/Suhana09/DevOps-Demo-WebApp.git'
             }
         }
+        
         stage("Sanity test") {
             steps {
                 sh "mvn clean test"
