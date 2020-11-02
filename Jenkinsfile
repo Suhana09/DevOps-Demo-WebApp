@@ -1,13 +1,23 @@
 pipeline {
   agent any
+  environment {
+    buildnum = currentBuild.getNumber()
+    gitURL= "https://github.com/PradeepJagannathan/DevOps-Demo-WebApp.git"
+    tomcatTestURL= "http://40.76.60.62:8080"
+    tomcatProdURL= "http://40.117.175.27:8080"
+    uiPath = "\\functionaltest\\target\\surefire-reports"
+    sanityPath="\\Acceptance\\target\\surefire-reports"
+  }
+  
   tools {
     maven 'maven'
+    jdk 'jdk'
   }
   
   stages {
-    stage('SCM'){
+    stage('checkout'){
       steps {
-        git 'https://github.com/PradeepJagannathan/DevOps-Demo-WebApp'
+        checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: "${gitURL}"]]])
       }
     }
     stage('compile'){
@@ -24,31 +34,39 @@ pipeline {
 //        }
 //      }
 //    }
-    stage ('Code Analysis') {
+    stage ('Deploy to Test') {
       steps {
-        script {
-          def scannerHome = tool 'SonarQube Scanner';
-          withSonarQubeEnv(credentialsId: 'sonar-webhook') {
-            sh "${tool("SonarQube Scanner")}/bin/sonar-scanner \-Dsonar.sources=. \-Dsonar.tests=. \-Dsonar.inclusions=**/test/java/servlet/createpage_junit.java \-Dsonar.test.exclusions=**/test/java/servlet/createpage_junit.java \-Dsonar.login=admin \-Dsonar.password=admin"   
-          }
-        }
+        sh 'mvn clean package'
+        deploy adapters: [tomcat8(credentialsId: 'tomcat', path: '', url: "${tomcatTestURL}")], contextPath: '/QAWebapp', war: '**/*.war'
       }
     }
-      
-    stage("Quality Gate") {
+//    stage ('Artifact')
+    
+    stage ('Perform UI Test') {
       steps {
-        timeout(time: 1, unit: 'HOURS') {
-  //        waitForQualityGate webhookSecretId: 'sonarwebhook'
-          waitForQualityGate abortPipeline: true
-        }
+        sh 'mvn test-f functionaltest/pom.xml'
+        publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '\\functionaltest\\target\\surefire-reports', reportFiles: 'index.html', reportName: 'UI Test', reportTitles: ''])
       }
     }
-  //  stage ('static code analysis'){
-  //    def mnvHome = tool name: 'maven', type: maven
-  //    withSonarQubeEnv('sonarqube'){
-  //      sh "${mvnHome}/bin/mvn sonar:sonar"
-  //    }
-  //  }
+//    stage("Performance Test") {
+//      steps {
+//        blazeMeterTest credentialsId: 'blazemeter', testId: '8578936.taurus', workspaceId: '667789'
+//      }
+//    }
+    stage ('Deploy to Prod') {
+      steps {
+        sh 'mvn clean install'
+        deploy adapters: [tomcat8(credentialsId: 'tomcat', path: '', url: "${tomcatProdURL}")], contextPath: '/ProdWebapp', war: '**/*.war'
+      }
+    }
+    
+    stage ('Sanity Test') {
+      steps {
+        sh 'mvn test'
+        publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '\\Acceptancetest\\target\\surefire-reports', reportFiles: 'index.html', reportName: 'Sanity Test', reportTitles: ''])
+      }
+    }
+
   }
 }
     
