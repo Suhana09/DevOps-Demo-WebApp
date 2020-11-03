@@ -8,7 +8,7 @@ pipeline {
         }
         stage("Jira") {
             steps {
-                jiraIssueSelector(issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: 'DT-1'])
+                jiraIssueSelector(issueSelector: [$class: 'ExplicitIssueSelector', issueKeys: 'DT-3'])
             }
             
         }
